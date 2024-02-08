@@ -24,7 +24,7 @@ Understanding data structures is fundamental for every programmer, as they form 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/data-structures-visualizer.git
+   git clone https://github.com/GuilhermeDanzer/data-structures-visualizer.git
    ```
 2. Navigate to the project directory:
    ```bash
