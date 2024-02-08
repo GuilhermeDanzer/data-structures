@@ -8,7 +8,9 @@
   "dependencies": {
     "next": "latest",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-lineto": "^3.3.0",
+    "react-spring": "^9.7.3"
   },
   "engines": {
     "node": ">=18"

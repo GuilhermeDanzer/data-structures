@@ -1,131 +1,108 @@
-import Head from 'next/head';
-import styles from '../styles/Home.module.css';
+import Head from 'next/head'
+import styles from '../styles/Home.module.css'
+import { LinkedList } from '../structures/LinkedList'
+import { useEffect, useState } from 'react'
+import { animated, useTransition } from '@react-spring/web'
 
 export default function Home() {
+  const [renderedLinkedList, setRenderedLinkedList] = useState()
+  const [showJson, setShowJson] = useState(false)
+  const [counter, setCounter] = useState(0)
+  const [linkedList, setLinkedList] = useState(new LinkedList())
+  const transitions = useTransition(renderedLinkedList, {
+    from: { x: 100 },
+    enter: { x: 0 },
+    leave: { x: 100 },
+    config: item => ({
+      duration: 100 * item,
+    }),
+  })
+  const renderLinkedList = () => {
+    console.log('called', linkedList)
+    let current = linkedList.head
+    let nodes = []
+
+    while (current !== null) {
+      nodes.push(current.val)
+      current = current.next
+    }
+
+    setRenderedLinkedList(nodes)
+  }
+
+  const deleteNode = () => {
+    // let number = Math.floor(Math.random() * 200) + 1
+    const updatedList = new LinkedList(linkedList.head)
+    updatedList.deleteElement()
+    if (counter === 0) return
+    setCounter(counter - 1)
+    setLinkedList(updatedList)
+  }
+  const addNewNode = () => {
+    // let number = Math.floor(Math.random() * 200) + 1
+    const updatedList = new LinkedList(linkedList.head)
+    updatedList.addElement(counter)
+    setCounter(counter + 1)
+    setLinkedList(updatedList)
+  }
+
+  useEffect(() => {
+    renderLinkedList()
+  }, [linkedList])
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <div>
+      <div className={styles.container}>
+        <Head>
+          <title>Linked List</title>
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <h1 style={{ color: 'white' }}>Linked List</h1>
+        <div style={{ gap: 25, display: 'flex', marginBottom: 50 }}>
+          <button
+            className={styles.button}
+            onClick={addNewNode}
+            title="press me">
+            Add Node
+          </button>
+          <button
+            className={styles.button}
+            onClick={deleteNode}
+            title="press me">
+            Remove Node
+          </button>
 
-      <main>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+          <button
+            className={styles.button}
+            onClick={() => setShowJson(!showJson)}
+            title="press me">
+            Code Linked List
+          </button>
         </div>
-      </main>
 
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel" className={styles.logo} />
-        </a>
-      </footer>
-
-      <style jsx>{`
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-        footer img {
-          margin-left: 0.5rem;
-        }
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-decoration: none;
-          color: inherit;
-        }
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family:
-            Menlo,
-            Monaco,
-            Lucida Console,
-            Liberation Mono,
-            DejaVu Sans Mono,
-            Bitstream Vera Sans Mono,
-            Courier New,
-            monospace;
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family:
-            -apple-system,
-            BlinkMacSystemFont,
-            Segoe UI,
-            Roboto,
-            Oxygen,
-            Ubuntu,
-            Cantarell,
-            Fira Sans,
-            Droid Sans,
-            Helvetica Neue,
-            sans-serif;
-        }
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
+        <div className={styles.nodeContainer}>
+          {transitions((style, item) => (
+            <div className={styles.nodeItemWrapper}>
+              <animated.div style={style} className={styles.node} key={item}>
+                <p className={styles.nodeText}>{item}</p>
+              </animated.div>
+              {item + 1 < renderedLinkedList.length && (
+                <div className={styles.separator} />
+              )}
+            </div>
+          ))}
+        </div>
+        {showJson && (
+          <pre style={{ color: 'white' }}>
+            {JSON.stringify(linkedList, null, 2)}
+          </pre>
+        )}
+        <style jsx global>{`
+          body {
+            background: black;
+          }
+        `}</style>
+      </div>
     </div>
-  );
+  )
 }
